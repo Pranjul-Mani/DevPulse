@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 4%;
+    --foreground: 210 20% 92%;
+    --card: 210 25% 7%;
+    --card-foreground: 210 20% 92%;
+    --popover: 210 25% 7%;
+    --popover-foreground: 210 20% 92%;
+    --primary: 155 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 210 20% 10%;
+    --secondary-foreground: 210 20% 92%;
+    --muted: 210 15% 15%;
+    --muted-foreground: 210 15% 55%;
+    --accent: 210 20% 10%;
+    --accent-foreground: 210 20% 92%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 25% 15%;
+    --input: 210 25% 15%;
+    --ring: 155 100% 50%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0D1117;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E2D3D;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2E4057;
+}
+
+/* Markdown styles */
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+  @apply font-heading font-bold text-devpulse-text mb-2 mt-4;
+}
+.markdown-body h1 { @apply text-xl; }
+.markdown-body h2 { @apply text-lg; }
+.markdown-body h3 { @apply text-base; }
+.markdown-body p { @apply mb-2 leading-relaxed; }
+.markdown-body code {
+  @apply bg-devpulse-surface px-1.5 py-0.5 rounded text-sm font-mono text-devpulse-accent;
+}
+.markdown-body pre {
+  @apply bg-devpulse-surface p-4 rounded-lg my-3 overflow-x-auto;
+}
+.markdown-body pre code {
+  @apply bg-transparent p-0 text-devpulse-text;
+}
+.markdown-body ul, .markdown-body ol {
+  @apply ml-4 mb-2;
+}
+.markdown-body li {
+  @apply mb-1;
+}
+.markdown-body strong {
+  @apply text-devpulse-text font-semibold;
+}
+
+/* SSE streaming animation */
+@keyframes blink-cursor {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.streaming-cursor::after {
+  content: '█';
+  animation: blink-cursor 1s infinite;
+  color: #00FF94;
+}
+
+/* Skeleton loading */
+.skeleton {
+  @apply bg-devpulse-surface rounded animate-pulse;
+}
