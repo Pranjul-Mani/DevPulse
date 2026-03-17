@@ -38,30 +38,32 @@ export default function CodeEditor() {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-devpulse-bg">
+    <div className="flex-1 flex flex-col bg-devpulse-bg min-h-0 relative">
       <div className="h-9 bg-devpulse-surface border-b border-devpulse-border flex items-center px-4">
         <span className="text-xs font-mono text-devpulse-muted flex-1">
           {selectedFile}
         </span>
         <AutoDocsDialog />
       </div>
-      <Editor
-        height="100%"
-        language={getLanguage(selectedFile)}
-        value={fileContent || "// Loading..."}
-        theme="vs-dark"
-        options={{
-          readOnly: true,
-          minimap: { enabled: true },
-          fontSize: 13,
-          fontFamily: "'JetBrains Mono', monospace",
-          lineNumbers: "on",
-          scrollBeyondLastLine: false,
-          wordWrap: "off",
-          renderWhitespace: "selection",
-          padding: { top: 12 },
-        }}
-      />
+      <div className="flex-1 relative min-h-0">
+        <Editor
+          height="100%"
+          language={getLanguage(selectedFile)}
+          value={fileContent || "// Loading..."}
+          theme="vs-dark"
+          options={{
+            readOnly: true,
+            minimap: { enabled: true },
+            fontSize: 13,
+            fontFamily: "'JetBrains Mono', monospace",
+            lineNumbers: "on",
+            scrollBeyondLastLine: false,
+            wordWrap: "off",
+            renderWhitespace: "selection",
+            padding: { top: 12 },
+          }}
+        />
+      </div>
     </div>
   );
 }

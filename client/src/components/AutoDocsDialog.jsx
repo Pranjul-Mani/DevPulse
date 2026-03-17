@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useRepoStore } from "@/store/repoStore";
+import { useAuthStore } from "@/store/authStore";
 
 export default function AutoDocsDialog() {
   const { currentRepo, selectedFile, fileContent } = useRepoStore();
@@ -26,11 +27,11 @@ export default function AutoDocsDialog() {
     setIsLoading(true);
     setDocs("");
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/docs/generate`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/docs/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${useAuthStore.getState().accessToken}`,
         },
         body: JSON.stringify({
           repoId: currentRepo._id,
@@ -74,10 +75,15 @@ export default function AutoDocsDialog() {
         <Button
           variant="outline"
           size="sm"
-          className="h-7 text-xs bg-devpulse-bg hover:bg-devpulse-surface text-devpulse-muted hover:text-devpulse-text border-devpulse-border ml-auto mr-2"
+          className="h-7 text-xs bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/20 transition-all font-medium flex items-center gap-1.5 shadow-[0_0_10px_rgba(16,185,129,0.15)] relative overflow-hidden group ml-auto mr-2"
         >
-          <BookOpen className="w-3 h-3 mr-1.5" />
-          Auto Docs
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
+          <BookOpen className="w-3 h-3 relative z-10" />
+          <span className="relative z-10">Auto Docs</span>
+          <span className="relative flex h-1.5 w-1.5 ml-1 z-10">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+          </span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-3xl bg-devpulse-surface border-devpulse-border flex flex-col max-h-[85vh]">

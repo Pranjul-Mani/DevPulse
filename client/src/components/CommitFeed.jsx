@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCommits } from "@/hooks/useCommits";
 import { useSocketEvent } from "@/hooks/useSocket";
 import { CommitSkeleton } from "./Skeletons";
+import { useAuthStore } from "@/store/authStore";
 
 export default function CommitFeed({ repoId }) {
   const queryClient = useQueryClient();
@@ -19,11 +20,11 @@ export default function CommitFeed({ repoId }) {
   const summarizeCommit = async (sha) => {
     try {
       setSummarizingSha(sha);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/commits/${repoId}/summarize/${sha}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/commits/${repoId}/summarize/${sha}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${useAuthStore.getState().accessToken}`,
         },
       });
       if (response.ok) {

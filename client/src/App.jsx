@@ -21,14 +21,14 @@ function GuestRoute({ children }) {
 
 function DevelopmentBanner() {
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] bg-[#0a0a0a]/80 border border-yellow-500/20 backdrop-blur-xl text-yellow-500 px-5 py-4 rounded-xl shadow-2xl flex items-center gap-4 pointer-events-none transition-all duration-300 hover:scale-105">
-      <div className="bg-yellow-500/10 p-2.5 rounded-full relative">
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] bg-[#0a0a0a]/90 border border-yellow-500/20 backdrop-blur-xl text-yellow-500 px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 pointer-events-none transition-all duration-300 hover:scale-105">
+      <div className="bg-yellow-500/10 p-2 rounded-full relative">
         <div className="absolute inset-0 bg-yellow-500/20 animate-ping rounded-full opacity-75"></div>
-        <AlertTriangle className="w-5 h-5 text-yellow-500 relative z-10" />
+        <AlertTriangle className="w-4 h-4 text-yellow-500 relative z-10" />
       </div>
       <div className="flex flex-col">
         <span className="text-sm font-bold tracking-wide drop-shadow-sm text-yellow-400">Website Under Development</span>
-        <span className="text-xs text-yellow-500/70 font-medium">Some features might be incomplete</span>
+        <span className="text-[10px] text-yellow-500/70 font-medium">Some features might be incomplete</span>
       </div>
     </div>
   );

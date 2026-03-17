@@ -20,10 +20,10 @@ export function ChatSkeleton() {
 
 export function FileTreeSkeleton() {
   return (
-    <div className="space-y-2 p-4">
+    <div className="space-y-2 p-4 w-full">
       {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
         <div key={i} className="flex items-center gap-2" style={{ paddingLeft: `${(i % 3) * 12}px` }}>
-          <Skeleton className="w-4 h-4" />
+          <Skeleton className="w-4 h-4 shrink-0" />
           <Skeleton className="h-4 flex-1" />
         </div>
       ))}
@@ -33,11 +33,11 @@ export function FileTreeSkeleton() {
 
 export function EditorSkeleton() {
   return (
-    <div className="p-4 space-y-2">
+    <div className="p-4 space-y-3 w-full">
       {Array.from({ length: 20 }, (_, i) => (
-        <div key={i} className="flex gap-4">
-          <Skeleton className="w-8 h-4" />
-          <Skeleton className="h-4" style={{ width: `${30 + Math.random() * 60}%` }} />
+        <div key={i} className="flex gap-4 items-center w-full">
+          <Skeleton className="w-8 h-4 shrink-0" />
+          <Skeleton className="h-4 rounded-md shrink-0" style={{ width: `${30 + Math.random() * 60}%` }} />
         </div>
       ))}
     </div>
