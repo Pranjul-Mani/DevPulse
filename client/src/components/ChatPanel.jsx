@@ -51,7 +51,7 @@ export default function ChatPanel({ repoId }) {
             <MessageSquare className="w-3 h-3 inline mr-1" />
             Q&A
           </button>
-          <button
+          {/* <button
             onClick={() => setChatMode("bug")}
             className={`px-2 py-1 rounded text-xs font-mono transition-colors ${
               chatMode === "bug"
@@ -61,7 +61,7 @@ export default function ChatPanel({ repoId }) {
           >
             <Bug className="w-3 h-3 inline mr-1" />
             Bug
-          </button>
+          </button> */}
           <button
             onClick={clearChat}
             className="px-2 py-1 rounded text-xs text-devpulse-muted hover:text-red-400 transition-colors"

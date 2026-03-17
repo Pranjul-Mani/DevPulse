@@ -9,7 +9,6 @@ import {
   Database,
   Loader2,
   Users,
-  GitCommit,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRepo, useIndexRepo } from "@/hooks/useRepo";
@@ -30,7 +29,6 @@ export default function WorkspacePage() {
   const indexRepo = useIndexRepo();
   const [leftOpen, setLeftOpen] = useState(true);
   const [rightOpen, setRightOpen] = useState(true);
-  const [bottomOpen, setBottomOpen] = useState(true);
 
   useSocket(id);
 
@@ -60,7 +58,7 @@ export default function WorkspacePage() {
   return (
     <div className="h-screen flex flex-col bg-devpulse-bg overflow-hidden">
       {/* Top bar */}
-      <div className="h-10 bg-devpulse-bg2 border-b border-devpulse-border flex items-center justify-between px-3 flex-shrink-0">
+      <div className="h-14 bg-devpulse-bg2 border-b border-devpulse-border flex items-center justify-between px-4 flex-shrink-0">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/dashboard")}
@@ -92,11 +90,15 @@ export default function WorkspacePage() {
               Index Repo
             </Button>
           )}
+
+          {/* Feature tabs — PR Summarizer & Live Commits moved here */}
+          <div className="flex items-center gap-4 ml-4 pl-4 border-l border-devpulse-border">
+            <PRSummarizer repoId={repo._id} />
+            <CommitFeed repoId={repo._id} />
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <PRSummarizer repoId={repo._id} />
-
           {onlineUsers.length > 0 && (
             <div className="flex items-center gap-1 text-xs text-devpulse-muted">
               <Users className="w-3 h-3" />
@@ -113,12 +115,6 @@ export default function WorkspacePage() {
             ) : (
               <PanelLeftOpen className="w-4 h-4" />
             )}
-          </button>
-          <button
-            onClick={() => setBottomOpen(!bottomOpen)}
-            className="p-1 text-devpulse-muted hover:text-devpulse-text transition-colors"
-          >
-            <GitCommit className="w-4 h-4" />
           </button>
           <button
             onClick={() => setRightOpen(!rightOpen)}
@@ -157,13 +153,6 @@ export default function WorkspacePage() {
           <div className="flex-1 min-h-0 flex flex-col bg-devpulse-bg">
             <CodeEditor />
           </div>
-
-          {/* Bottom panel - Commit feed */}
-          {bottomOpen && (
-            <div className="h-60 border-t border-devpulse-border flex-shrink-0">
-              <CommitFeed repoId={repo._id} />
-            </div>
-          )}
         </div>
 
         {/* Right panel - Chat */}
