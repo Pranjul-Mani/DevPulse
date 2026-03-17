@@ -39,7 +39,7 @@ export default function CodeEditor() {
 
   return (
     <div className="flex-1 flex flex-col bg-devpulse-bg min-h-0 relative">
-      <div className="h-9 bg-devpulse-surface border-b border-devpulse-border flex items-center px-4">
+      <div className="h-12 bg-devpulse-surface border-b border-devpulse-border flex items-center px-4">
         <span className="text-xs font-mono text-devpulse-muted flex-1">
           {selectedFile}
         </span>

@@ -6,12 +6,22 @@ import { useCommits } from "@/hooks/useCommits";
 import { useSocketEvent } from "@/hooks/useSocket";
 import { CommitSkeleton } from "./Skeletons";
 import { useAuthStore } from "@/store/authStore";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export default function CommitFeed({ repoId }) {
   const queryClient = useQueryClient();
   const { data, isLoading } = useCommits(repoId);
   const [liveCommits, setLiveCommits] = useState([]);
   const [summarizingSha, setSummarizingSha] = useState(null);
+  const [open, setOpen] = useState(false);
 
   const handleNewCommit = useCallback((commit) => {
     setLiveCommits((prev) => [commit, ...prev]);
@@ -45,31 +55,57 @@ export default function CommitFeed({ repoId }) {
 
   const allCommits = [...liveCommits, ...(data?.commits || [])];
 
-  if (isLoading) return <CommitSkeleton />;
-
   return (
-    <div className="flex flex-col h-full bg-devpulse-bg">
-      <div className="h-9 bg-devpulse-surface border-b border-devpulse-border flex items-center px-3">
-        <GitCommit className="w-3.5 h-3.5 text-devpulse-accent mr-2" />
-        <span className="text-xs font-heading font-bold text-devpulse-text">
-          Live Commits
-        </span>
-        {liveCommits.length > 0 && (
-          <span className="ml-2 px-1.5 py-0.5 bg-devpulse-accent/10 text-devpulse-accent text-[10px] font-mono rounded">
-            {liveCommits.length} new
-          </span>
-        )}
-      </div>
-
-      <ScrollArea className="flex-1">
-        <div className="p-3 space-y-3">
-          {allCommits.length === 0 && (
-            <p className="text-devpulse-muted text-xs text-center py-6">
-              No commits yet. Push code to see live updates.
-            </p>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-7 text-xs bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border-blue-500/20 transition-all font-medium flex items-center gap-1.5 shadow-[0_0_10px_rgba(59,130,246,0.15)] relative overflow-hidden group"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
+          <GitCommit className="w-3 h-3 relative z-10" />
+          <span className="relative z-10">Live Commits</span>
+          {liveCommits.length > 0 && (
+            <span className="relative z-10 ml-1 px-1.5 py-0.5 bg-blue-500/20 text-blue-400 text-[10px] font-mono rounded">
+              {liveCommits.length}
+            </span>
           )}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="bg-devpulse-bg2 border-devpulse-border max-w-2xl max-h-[80vh] overflow-hidden flex flex-col w-full">
+        <DialogHeader>
+          <DialogTitle className="text-devpulse-text font-heading flex items-center">
+            <GitCommit className="w-5 h-5 inline mr-2 text-devpulse-accent" />
+            Live Commits
+          </DialogTitle>
+          <DialogDescription className="text-devpulse-muted">
+            Real-time commit updates for this repository.
+          </DialogDescription>
+        </DialogHeader>
 
-          {allCommits.map((commit, i) => (
+        <div className="flex flex-col flex-1 min-h-0 bg-devpulse-bg rounded-md border border-devpulse-border mt-4">
+          <div className="h-9 bg-devpulse-surface border-b border-devpulse-border flex items-center px-3 shrink-0">
+            <GitCommit className="w-3.5 h-3.5 text-devpulse-accent mr-2" />
+            <span className="text-xs font-heading font-bold text-devpulse-text">
+              Recent Activity
+            </span>
+            {liveCommits.length > 0 && (
+              <span className="ml-2 px-1.5 py-0.5 bg-devpulse-accent/10 text-devpulse-accent text-[10px] font-mono rounded">
+                {liveCommits.length} new
+              </span>
+            )}
+          </div>
+          <ScrollArea className="flex-1 h-[50vh]">
+            <div className="p-3 space-y-3">
+              {isLoading ? (
+                <CommitSkeleton />
+              ) : allCommits.length === 0 ? (
+                <p className="text-devpulse-muted text-xs text-center py-6">
+                  No commits yet. Push code to see live updates.
+                </p>
+              ) : (
+                allCommits.map((commit, i) => (
             <div
               key={commit.sha || i}
               className={`p-3 rounded-lg border transition-colors ${
@@ -131,9 +167,12 @@ export default function CommitFeed({ repoId }) {
                 </div>
               </div>
             </div>
-          ))}
+          ))
+        )}
+            </div>
+          </ScrollArea>
         </div>
-      </ScrollArea>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
