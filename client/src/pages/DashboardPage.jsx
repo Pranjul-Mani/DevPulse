@@ -151,8 +151,9 @@ export default function DashboardPage() {
                   )}
                   <Button
                     size="sm"
-                    className="flex-1 bg-devpulse-accent text-black hover:bg-devpulse-accent/80 text-xs font-bold"
+                    className="flex-1 bg-devpulse-accent text-black hover:bg-devpulse-accent/80 text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={() => openRepo(repo)}
+                    disabled={!repo.isIndexed}
                   >
                     Open
                     <ArrowRight className="w-3 h-3 ml-1.5" />

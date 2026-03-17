@@ -44,12 +44,17 @@ export default function PRSummarizerDialog({ repoId }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
-          className="text-devpulse-muted hover:text-devpulse-text text-xs"
+          className="h-7 text-xs bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border-purple-500/20 transition-all font-medium flex items-center gap-1.5 shadow-[0_0_10px_rgba(168,85,247,0.15)] relative overflow-hidden group"
         >
-          <FileText className="w-3.5 h-3.5 mr-1" />
-          PR Summary
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
+          <FileText className="w-3 h-3 relative z-10" />
+          <span className="relative z-10">PR Summary</span>
+          <span className="relative flex h-1.5 w-1.5 ml-1 z-10">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-purple-500"></span>
+          </span>
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-devpulse-bg2 border-devpulse-border max-w-2xl max-h-[80vh] overflow-y-auto">
