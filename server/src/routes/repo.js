@@ -7,6 +7,7 @@ import {
   fetchFileContent,
   fetchAllFiles,
   buildFileTree,
+  createWebhook,
 } from "../services/githubService.js";
 import { indexRepository } from "../services/ragService.js";
 
@@ -71,6 +72,18 @@ router.post("/connect", authenticate, async (req, res, next) => {
     });
 
     await repo.save();
+
+    // Automatically create a GitHub webhook if WEBHOOK_BASE_URL is configured
+    if (process.env.WEBHOOK_BASE_URL && process.env.GITHUB_WEBHOOK_SECRET) {
+      const webhookUrl = `${process.env.WEBHOOK_BASE_URL}/api/webhooks/github`;
+      await createWebhook(
+        token,
+        owner,
+        repoName,
+        webhookUrl,
+        process.env.GITHUB_WEBHOOK_SECRET
+      );
+    }
 
     res.status(201).json({ repo });
   } catch (error) {

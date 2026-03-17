@@ -196,3 +196,41 @@ export const buildFileTree = (files) => {
 
   return tree;
 };
+
+export const createWebhook = async (token, owner, repo, webhookUrl, secret) => {
+  const octokit = getOctokit(token);
+  
+  try {
+    // First, check if a webhook for this URL already exists to avoid duplicates
+    const { data: hooks } = await octokit.rest.repos.listWebhooks({
+      owner,
+      repo,
+    });
+    
+    const existingHook = hooks.find(h => h.config.url === webhookUrl);
+    if (existingHook) {
+      return existingHook; // Already exists
+    }
+
+    // Create the new webhook
+    const { data } = await octokit.rest.repos.createWebhook({
+      owner,
+      repo,
+      name: "web",
+      active: true,
+      events: ["push", "pull_request"],
+      config: {
+        url: webhookUrl,
+        content_type: "json",
+        secret: secret,
+        insecure_ssl: "0" // 0 means false (use SSL validation)
+      }
+    });
+    
+    return data;
+  } catch (error) {
+    console.error("Failed to create webhook:", error.message);
+    // Don't throw - we still want the repo to connect even if webhook setup fails
+    return null; 
+  }
+};

@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/LoginPage";
@@ -20,8 +20,11 @@ function GuestRoute({ children }) {
 }
 
 function DevelopmentBanner() {
+  const location = useLocation();
+  if (location.pathname.startsWith('/workspace')) return null;
+
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] bg-[#0a0a0a]/90 border border-yellow-500/20 backdrop-blur-xl text-yellow-500 px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 pointer-events-none transition-all duration-300 hover:scale-105">
+    <div className="fixed bottom-6 right-6 z-[9999] bg-[#0a0a0a]/90 border border-yellow-500/20 backdrop-blur-xl text-yellow-500 px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 pointer-events-none transition-all duration-300 hover:scale-105">
       <div className="bg-yellow-500/10 p-2 rounded-full relative">
         <div className="absolute inset-0 bg-yellow-500/20 animate-ping rounded-full opacity-75"></div>
         <AlertTriangle className="w-4 h-4 text-yellow-500 relative z-10" />
