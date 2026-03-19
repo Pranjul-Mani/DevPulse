@@ -197,6 +197,37 @@ export const buildFileTree = (files) => {
   return tree;
 };
 
+export const fetchOpenPRsWithCommits = async (token, owner, repo) => {
+  const octokit = getOctokit(token);
+
+  const { data: openPRs } = await octokit.rest.pulls.list({
+    owner,
+    repo,
+    state: "open",
+    per_page: 50,
+  });
+
+  const prsWithCommits = await Promise.all(
+    openPRs.map(async (pr) => {
+      const { data: commits } = await octokit.rest.pulls.listCommits({
+        owner,
+        repo,
+        pull_number: pr.number,
+        per_page: 100,
+      });
+      return {
+        prNumber: pr.number,
+        prTitle: pr.title,
+        prAuthor: pr.user?.login,
+        prState: pr.state,
+        commitShas: commits.map((c) => c.sha),
+      };
+    })
+  );
+
+  return prsWithCommits;
+};
+
 export const createWebhook = async (token, owner, repo, webhookUrl, secret) => {
   const octokit = getOctokit(token);
   

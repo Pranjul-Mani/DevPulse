@@ -7,11 +7,43 @@ import { summarizeCommit } from "../services/groqService.js";
 
 const router = Router();
 
-// GitHub push webhook
+// GitHub webhook handler (push + pull_request)
 router.post("/github", verifyWebhookSignature, async (req, res, next) => {
   try {
     const event = req.headers["x-github-event"];
 
+    // ── Pull Request events ──────────────────────────────────────────────────
+    if (event === "pull_request") {
+      const { action, pull_request, repository } = req.body;
+      const fullName = repository.full_name;
+
+      const repo = await Repo.findOne({ fullName });
+      if (!repo) return res.status(200).json({ message: "Repo not tracked" });
+
+      const io = req.app.get("io");
+
+      if (action === "opened" || action === "reopened" || action === "synchronize") {
+        // Emit the PR info so the frontend can refetch open-PR commits
+        if (io) {
+          io.to(`repo:${repo._id}`).emit("pr:opened", {
+            prNumber: pull_request.number,
+            prTitle: pull_request.title,
+            prAuthor: pull_request.user?.login,
+          });
+        }
+      } else if (action === "closed") {
+        // Emit closed event so the frontend can remove those commits from view
+        if (io) {
+          io.to(`repo:${repo._id}`).emit("pr:closed", {
+            prNumber: pull_request.number,
+          });
+        }
+      }
+
+      return res.status(200).json({ message: "PR event processed" });
+    }
+
+    // ── Push events ─────────────────────────────────────────────────────────
     if (event !== "push") {
       return res.status(200).json({ message: "Event ignored" });
     }

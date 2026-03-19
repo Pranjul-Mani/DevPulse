@@ -103,30 +103,68 @@ export const indexRepository = async (repoId, files) => {
 };
 
 export const vectorSearch = async (repoId, queryText, limit = 5) => {
-  const queryEmbedding = await generateEmbedding(queryText);
+  let queryEmbedding = await generateEmbedding(queryText);
+  if (Array.isArray(queryEmbedding[0])) {
+    queryEmbedding = queryEmbedding[0];
+  }
 
-  const results = await Embedding.aggregate([
-    {
-      $vectorSearch: {
-        index: "vector_index",
-        path: "embedding",
-        queryVector: queryEmbedding,
-        numCandidates: 100,
-        limit,
-        filter: { repoId: repoId },
+  try {
+    const results = await Embedding.aggregate([
+      {
+        $vectorSearch: {
+          index: "vector_index",
+          path: "embedding",
+          queryVector: queryEmbedding,
+          numCandidates: 100,
+          limit,
+          filter: { repoId: repoId },
+        },
       },
-    },
-    {
-      $project: {
-        filePath: 1,
-        content: 1,
-        metadata: 1,
-        score: { $meta: "vectorSearchScore" },
+      {
+        $project: {
+          filePath: 1,
+          content: 1,
+          metadata: 1,
+          score: { $meta: "vectorSearchScore" },
+        },
       },
-    },
-  ]);
+    ]);
 
-  return results;
+    if (results && results.length > 0) {
+      return results;
+    }
+  } catch (error) {
+    console.log("[vectorSearch] Atlas Vector Search failed or missing index, falling back to JS search...");
+  }
+
+  // Fallback: In-memory Cosine Similarity
+  console.log("[vectorSearch] Using JS cosine similarity fallback...");
+  const docs = await Embedding.find({ repoId });
+  
+  const cosineSimilarity = (vecA, vecB) => {
+    let dotProduct = 0;
+    let normA = 0;
+    let normB = 0;
+    for (let i = 0; i < vecA.length; i++) {
+      dotProduct += vecA[i] * vecB[i];
+      normA += vecA[i] * vecA[i];
+      normB += vecB[i] * vecB[i];
+    }
+    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+  };
+
+  const scoredDocs = docs.map((doc) => {
+    const score = doc.embedding ? cosineSimilarity(queryEmbedding, doc.embedding) : 0;
+    return {
+      filePath: doc.filePath,
+      content: doc.content,
+      metadata: doc.metadata,
+      score,
+    };
+  });
+
+  scoredDocs.sort((a, b) => b.score - a.score);
+  return scoredDocs.slice(0, limit);
 };
 
 export const buildContext = (chunks) => {

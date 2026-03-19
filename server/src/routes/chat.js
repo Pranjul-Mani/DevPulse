@@ -31,6 +31,7 @@ router.post("/ask", authenticate, async (req, res, next) => {
 
     // Vector search for relevant chunks
     const chunks = await vectorSearch(repo._id, question, 5);
+    console.log(`[RAG Q&A] Question: "${question}" -> Found ${chunks.length} chunks`);
     const context = buildContext(chunks);
 
     // Get or create conversation
@@ -48,17 +49,17 @@ router.post("/ask", authenticate, async (req, res, next) => {
       });
     }
 
+    // Build history for context (exclude the current question we are about to add)
+    const history = conversation.messages.slice(-6).map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
     // Add user message
     conversation.messages.push({
       role: "user",
       content: question,
     });
-
-    // Build history for context
-    const history = conversation.messages.slice(-6).map((m) => ({
-      role: m.role,
-      content: m.content,
-    }));
 
     // Stream response
     res.setHeader("Content-Type", "text/event-stream");
@@ -70,7 +71,8 @@ router.post("/ask", authenticate, async (req, res, next) => {
     let fullResponse = "";
 
     for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content || "";
+      const delta = chunk.choices?.[0]?.delta;
+      const content = delta?.content || "";
       if (content) {
         fullResponse += content;
         res.write(`data: ${JSON.stringify({ content })}\n\n`);
@@ -152,7 +154,8 @@ router.post("/bug", authenticate, async (req, res, next) => {
     let fullResponse = "";
 
     for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content || "";
+      const delta = chunk.choices?.[0]?.delta;
+      const content = delta?.content || "";
       if (content) {
         fullResponse += content;
         res.write(`data: ${JSON.stringify({ content })}\n\n`);

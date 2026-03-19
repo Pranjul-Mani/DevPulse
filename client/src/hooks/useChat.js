@@ -85,7 +85,12 @@ export const useChat = (repoId) => {
           for (const line of lines) {
             if (line.startsWith("data: ")) {
               try {
-                const parsed = JSON.parse(line.slice(6));
+                const raw = line.slice(6).trim();
+                // Skip SSE heartbeat / Groq [DONE] sentinel
+                if (!raw || raw === "[DONE]") continue;
+
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed !== "object") continue;
 
                 if (parsed.done) {
                   if (parsed.conversationId) {
