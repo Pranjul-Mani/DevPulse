@@ -1,9 +1,15 @@
 import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
+import { useState } from "react";
 
 export default function LandingPage() {
   const cursorRef = useRef(null);
   const ringRef = useRef(null);
+  const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
 
   useEffect(() => {
     const cursor = cursorRef.current;
@@ -65,6 +71,16 @@ export default function LandingPage() {
       });
       observer.disconnect();
     };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -164,10 +180,61 @@ export default function LandingPage() {
               </li>
             ))}
           </ul>
-          <Link to="/register" style={{
-            background: '#00FF94', color: '#000', padding: '10px 24px', borderRadius: 6,
-            fontWeight: 600, fontSize: 14, textDecoration: 'none', letterSpacing: '0.3px', transition: 'all 0.2s'
-          }}>Get Started Free →</Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', position: 'relative' }} ref={profileRef}>
+            {!user ? (
+              <>
+                <Link to="/login" style={{
+                  color: '#E8EDF2', fontSize: 14, fontWeight: 600, textDecoration: 'none', transition: 'color 0.2s'
+                }}>Sign in</Link>
+                <Link to="/register" style={{
+                  background: '#00FF94', color: '#000', padding: '10px 24px', borderRadius: 6,
+                  fontWeight: 600, fontSize: 14, textDecoration: 'none', letterSpacing: '0.3px', transition: 'all 0.2s'
+                }}>Get Started Free →</Link>
+              </>
+            ) : (
+              <>
+                <button 
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  style={{
+                    width: 40, height: 40, borderRadius: '50%', background: '#111820', 
+                    border: '1px solid #1E2D3D', display: 'flex', alignItems: 'center', 
+                    justifyContent: 'center', color: '#00FF94', fontFamily: "'Syne', sans-serif",
+                    fontWeight: 700, cursor: 'pointer', transition: 'border-color 0.2s'
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.borderColor = '#00FF94'}
+                  onMouseOut={(e) => e.currentTarget.style.borderColor = '#1E2D3D'}
+                >
+                  {user.name?.charAt(0).toUpperCase() || 'U'}
+                </button>
+                
+                {profileOpen && (
+                  <div style={{
+                    position: 'absolute', top: 56, right: 0, width: 200, background: '#111820',
+                    border: '1px solid #1E2D3D', borderRadius: 8, padding: '8px 0',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.5)', zIndex: 101
+                  }}>
+                    <div style={{ padding: '8px 16px', borderBottom: '1px solid #1E2D3D', marginBottom: 8 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#E8EDF2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.name}</div>
+                      <div style={{ fontSize: 12, color: '#6B7D8F', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.email}</div>
+                    </div>
+                    <Link to="/dashboard" style={{
+                      display: 'block', padding: '10px 16px', color: '#E8EDF2', textDecoration: 'none',
+                      fontSize: 14, transition: 'background 0.2s'
+                    }} onMouseOver={e => e.currentTarget.style.background = '#080C10'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+                      Dashboard
+                    </Link>
+                    <button onClick={() => { logout(); setProfileOpen(false); }} style={{
+                      display: 'block', width: '100%', textAlign: 'left', padding: '10px 16px', 
+                      color: '#FF6B35', textDecoration: 'none', fontSize: 14, background: 'transparent',
+                      border: 'none', cursor: 'pointer', transition: 'background 0.2s'
+                    }} onMouseOver={e => e.currentTarget.style.background = '#080C10'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </nav>
 
         {/* HERO */}
