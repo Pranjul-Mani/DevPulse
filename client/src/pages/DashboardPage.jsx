@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 import {
   GitBranch,
   Database,
@@ -20,6 +21,18 @@ export default function DashboardPage() {
   const setCurrentRepo = useRepoStore((s) => s.setCurrentRepo);
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const openRepo = (repo) => {
     setCurrentRepo(repo);
@@ -29,27 +42,39 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-devpulse-bg">
       {/* Header */}
-      <header className="border-b border-devpulse-border bg-devpulse-bg2">
+      <header className="border-b border-devpulse-border bg-devpulse-bg2 relative z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-2.5 h-2.5 bg-devpulse-accent rounded-full animate-pulse" />
-            <span className="font-heading font-extrabold text-xl text-devpulse-text">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-2.5 h-2.5 bg-devpulse-accent rounded-full animate-pulse-scale" />
+            <span className="font-heading font-extrabold text-xl text-devpulse-text group-hover:text-devpulse-accent transition-colors">
               DevPulse
             </span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-devpulse-muted">
-              {user?.name}
-            </span>
-            <button
-              onClick={() => {
-                logout();
-                navigate("/");
-              }}
-              className="text-xs text-devpulse-muted hover:text-devpulse-text transition-colors"
+          </Link>
+          <div className="flex items-center gap-4 relative" ref={profileRef}>
+            <button 
+              onClick={() => setProfileOpen(!profileOpen)}
+              className="w-10 h-10 rounded-full bg-devpulse-surface border border-devpulse-border flex items-center justify-center text-devpulse-accent font-heading font-bold hover:border-devpulse-accent transition-colors"
             >
-              Sign out
+              {user?.name?.charAt(0).toUpperCase() || 'U'}
             </button>
+            
+            {profileOpen && (
+              <div className="absolute top-12 right-0 w-48 bg-devpulse-surface border border-devpulse-border rounded-lg shadow-xl py-2 z-50">
+                <div className="px-4 py-2 border-b border-devpulse-border mb-2">
+                  <p className="text-sm font-bold text-devpulse-text truncate">{user?.name}</p>
+                  <p className="text-xs text-devpulse-muted truncate">{user?.email}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-devpulse-bg transition-colors"
+                >
+                  Sign out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>

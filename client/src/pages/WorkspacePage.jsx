@@ -62,11 +62,12 @@ export default function WorkspacePage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/dashboard")}
-            className="text-devpulse-muted hover:text-devpulse-text transition-colors"
+            className="flex items-center gap-1.5 text-xs font-mono font-bold text-black hover:bg-devpulse-accent/80 transition-colors bg-devpulse-accent px-2.5 py-1 rounded-md mr-1"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Back
           </button>
-          <div className="w-2 h-2 bg-devpulse-accent rounded-full animate-pulse" />
+          <div className="w-2 h-2 bg-devpulse-accent rounded-full animate-pulse-scale" />
           <span className="font-heading font-bold text-sm text-devpulse-text">
             {repo.fullName}
           </span>

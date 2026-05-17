@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function LoginPage() {
@@ -23,11 +23,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-devpulse-bg flex items-center justify-center px-4">
+    <div className="min-h-screen bg-devpulse-bg flex items-center justify-center px-4 relative">
+      <Link to="/" className="absolute top-8 left-8 flex items-center gap-2 text-sm font-mono text-devpulse-muted hover:text-devpulse-text transition-colors">
+        <ArrowLeft className="w-4 h-4" />
+        Back to Home
+      </Link>
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 font-heading font-extrabold text-2xl text-devpulse-text">
-            <div className="w-2.5 h-2.5 bg-devpulse-accent rounded-full animate-pulse" />
+            <div className="w-2.5 h-2.5 bg-devpulse-accent rounded-full animate-pulse-scale" />
             DevPulse
           </Link>
           <p className="text-devpulse-muted text-sm mt-2">
